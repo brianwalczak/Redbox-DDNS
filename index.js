@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 
+const reserved = ['ddns', 'search'];
 const app = express();
 const PORT = 3001;
 
@@ -296,7 +297,7 @@ app.post('/available', async (req, res) => {
     const subdomain = upperSubdomain.toLowerCase();
     const users = await readUsers();
 
-    res.json({ success: !(users.some(user => user.subdomain === subdomain)) }); // this is a soft check, we're going to use the Cloudflare API to check IF they decide to sign up
+    res.json({ success: !(users.some(user => user.subdomain === subdomain) || reserved.includes(subdomain)) }); // this is a soft check, we're going to use the Cloudflare API to check IF they decide to sign up
 });
 
 // Login and create a session
@@ -361,7 +362,7 @@ app.post('/signup', SIGNUP_RATE_LIMIT, rejectLoggedIn, async (req, res) => {
 
     // Check if subdomain is taken
     const isTaken = await isReserved(subdomain);
-    if (users.find(user => user.subdomain === subdomain) || isTaken) {
+    if (users.find(user => user.subdomain === subdomain) || reserved.includes(subdomain) || isTaken) {
         return res.json({ error: 'It looks like this domain was already taken! Please try another.' });
     }
 
