@@ -48,9 +48,10 @@ const UPDATE_RATE_LIMIT = rateLimit({
     message: "It looks like you've reached the maximum updates, please try again in 5 minutes."
 });
 
-const usersFilePath = path.join(__dirname, 'users.json');
+const usersFilePath = process.env.USERS_FILE ? process.env.USERS_FILE : path.join(__dirname, './users.json');
+const hops = parseInt(process.env.PROXY_HOPS, 10);
 app.use(express.static('public'));
-app.set('trust proxy', 2); // added by Brian, trusting two hops (nginx proxy manager, cloudflare proxying)
+app.set('trust proxy', isNaN(hops) ? 2 : hops);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
