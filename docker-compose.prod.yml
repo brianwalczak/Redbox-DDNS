@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    image: redbox-ddns
+    ports:
+      - '3001:3001'
+    volumes:
+      - '/data/volumes/redbox-ddns/users.json:/usr/src/app/users.json'
+    environment:
+      USERS_FILE: /usr/src/app/users.json
+    restart: unless-stopped
