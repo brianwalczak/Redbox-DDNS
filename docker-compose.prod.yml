@@ -3,9 +3,15 @@ services:
     build: .
     image: redbox-ddns
     ports:
-      - '3001:3001'
+      - '8080'
     volumes:
       - '/data/storage/redbox-ddns/users.json:/usr/src/app/users.json'
-    environment:
-      USERS_FILE: /usr/src/app/users.json
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8080/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     restart: unless-stopped

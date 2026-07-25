@@ -9,7 +9,7 @@ require('dotenv').config();
 
 const reserved = ['ddns', 'search'];
 const app = express();
-const PORT = 3001;
+const PORT = 8080;
 
 // Cloudflare API details
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
@@ -55,6 +55,11 @@ app.set('trust proxy', isNaN(hops) ? 2 : hops);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
+
+app.get('/health', (req, res) => {
+    res.sendStatus(200);
+});
+
 app.use(GENERAL_RATE_LIMIT);
 app.use(session({
     secret: process.env.SESSION_TOKEN,
